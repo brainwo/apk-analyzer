@@ -1,0 +1,70 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>APK Analyzer</title>
+    <meta charset="UTF-8" />
+    <meta name="viewport"
+          content="width=device-width, initial-scale=1.0" />
+    <script src="https://cdn.tailwindcss.com"></script>
+</head>
+<body class="text-center bg-gray-900 text-gray-100">
+    <h1 class="text-5xl font-bold p-5 mt-24">APK Analyzer</h1>
+    <p class="max-w-xl m-auto">This tool helps you to check if an APK file is a Flutter project.</p>
+    <p>
+        I don't guarantee this is accurate, however feel free to contribute on
+        <a href=""
+           class="hover:underline text-blue-400">GitHub</a>.
+    </p>
+    <input type="file"
+           accept=".apk,application/vnd.android.package-archive"
+           class="rounded-2xl bg-gray-200 text-black px-2 py-1 text-sm mt-4" />
+    <h2 class="mt-8">Result:</h2>
+    <span id="result"></span>
+    <footer class="absolute bottom-0 inset-x-0 my-auto mb-12">
+        <p> Brought to you by
+            <a class="hover:underline text-blue-400"
+               href="https://github.com/brainwo">Brian Wo</a>.
+        </p>
+        <p>If you like to see more projects like this, consider
+            <a class="hover:underline text-blue-400"
+               href="https://buymeacoffee.com/brianwo">donating</a>.
+        </p>
+    </footer>
+    <script>
+        const fileInput = document.querySelector("input[type=file]");
+        const targetString = "libflutter.so"; // Replace with your target string
+
+        fileInput.addEventListener("change", (e) => {
+            let detectionResult = "Flutter not detected";
+
+            document.getElementById("result").innerText = "";
+
+            const reader = new FileReader();
+            const chunkSize = 1024; // Adjust chunk size as needed
+
+            reader.onload = (event) => {
+                const chunk = event.target.result;
+                // Process the chunk and search for the target string
+                if (chunk.indexOf(targetString) !== -1) {
+                    detectionResult = "Flutter detected";
+                    reader.abort(); // Stop reading if found
+                }
+            };
+
+            reader.onprogress = (event) => {
+                document.getElementById("result").innerText = `Loading ${Math.round(event.loaded / event.total * 100).toFixed(2)}%`;
+            };
+
+            reader.onloadend = (event) => {
+                document.getElementById("result").innerText = detectionResult;
+                reader.onload = null;
+                reader.onprogress = null;
+                reader.onloadend = null;
+            }
+
+
+            reader.readAsText(e.target.files[0], {chunkSize});
+        });
+    </script>
+</body>
+</html>
