@@ -15,26 +15,52 @@
         <a href=""
            class="hover:underline text-blue-400">GitHub</a>.
     </p>
-    <input type="file"
-           accept=".apk,application/vnd.android.package-archive"
-           class="rounded-2xl bg-gray-200 text-black px-2 py-1 text-sm mt-4" />
+    <div class="w-96 h-72 rounded-md border-gray-600 border-2 m-auto align-middle mt-4" id="drop-target">
+        <div class="mt-20">
+            <div> Drop a file or </div>
+            <input type="file"
+               accept=".apk, application/vnd.android.package-archive, .xapk"
+               class="rounded-2xl bg-gray-200 text-black px-2 py-1 text-sm mt-4" />
+        </div>
+    </div>
     <h2 class="mt-8">Result:</h2>
     <span id="result"></span>
     <footer class="absolute bottom-0 inset-x-0 my-auto mb-12">
-        <p> Brought to you by
+        <p>Brought to you by
             <a class="hover:underline text-blue-400"
                href="https://github.com/brainwo">Brian Wo</a>.
         </p>
-        <p>If you like to see more projects like this, consider
+        <p>Consider
             <a class="hover:underline text-blue-400"
-               href="https://buymeacoffee.com/brianwo">donating</a>.
+               href="https://buymeacoffee.com/brianwo">donating</a> if you like to see more projects like this.
         </p>
     </footer>
     <script>
         const fileInput = document.querySelector("input[type=file]");
+        const dropTarget = document.getElementById('drop-target');
         const targetString = "libflutter.so"; // Replace with your target string
-
+    
         fileInput.addEventListener("change", (e) => {
+            processApk(e.target.files[0])
+        });
+
+        dropTarget.addEventListener('dragover', function(e) {
+            e.preventDefault();
+            dropTarget.classList.add("bg-gray-700");
+        });
+    
+        dropTarget.addEventListener('dragleave', function() {
+            dropTarget.classList.remove("bg-gray-700");
+        });
+    
+        dropTarget.addEventListener('drop', function(e) {
+            e.preventDefault();
+            dropTarget.classList.remove("bg-gray-700");
+
+            processApk(e.dataTransfer.files[0]);
+        });
+
+        function processApk(e){
             let detectionResult = "Flutter not detected";
 
             document.getElementById("result").innerText = "";
@@ -62,9 +88,8 @@
                 reader.onloadend = null;
             }
 
-
-            reader.readAsText(e.target.files[0], {chunkSize});
-        });
+            reader.readAsText(e, {chunkSize});
+        }
     </script>
 </body>
 </html>
